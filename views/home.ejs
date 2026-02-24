@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>URL Shortener</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <style>
+        :root {
+            --bg: #f4f6f9;
+            --card: #ffffff;
+            --text: #111827;
+            --primary: #4f46e5;
+            --border: #e5e7eb;
+        }
+
+        body.dark {
+            --bg: #0f172a;
+            --card: #1e293b;
+            --text: #f1f5f9;
+            --primary: #6366f1;
+            --border: #334155;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            transition: 0.3s ease;
+        }
+
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 40px;
+            background: var(--card);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .logo {
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        .nav-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn {
+            padding: 7px 14px;
+            border-radius: 6px;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .toggle {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--text);
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 60px auto;
+            background: var(--card);
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        form {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        input {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            background: transparent;
+            color: var(--text);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th, td {
+            padding: 10px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .short-link {
+            color: var(--primary);
+            text-decoration: none;
+        }
+
+        .copy-btn {
+            margin-left: 10px;
+            font-size: 12px;
+            padding: 4px 8px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .generated {
+            margin-bottom: 15px;
+            padding: 10px;
+            background: rgba(79,70,229,0.1);
+            border-radius: 6px;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="navbar">
+    <div class="logo">Shortify</div>
+    <div class="nav-actions">
+        <button class="btn toggle" onclick="toggleDarkMode()">🌙</button>
+        <a href="/login" class="btn primary">Login</a>
+    </div>
+</div>
+
+<div class="container">
+
+    <h1>URL Shortener</h1>
+
+    <% if (typeof id !== "undefined" && id) { %>
+        <div class="generated">
+            <span id="shortUrl">
+                http://localhost:8001/<%= id %>
+            </span>
+            <button class="copy-btn" onclick="copyToClipboard()">Copy</button>
+        </div>
+    <% } %>
+
+    <form action="/url" method="post">
+        <input type="text" name="url" placeholder="Enter your original URL..." required>
+        <button class="btn primary" type="submit">Shorten</button>
+    </form>
+
+    <% if (typeof urls !== "undefined" && urls.length > 0) { %>
+        <table>
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Short ID</th>
+                    <th>Original URL</th>
+                    <th>Clicks</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% urls.forEach((url, index)=> { %>
+                    <tr>
+                        <td><%= index + 1 %></td>
+                        <td>
+                            <a class="short-link" href="/<%= url.shortId %>" target="_blank">
+                                <%= url.shortId %>
+                            </a>
+                        </td>
+                        <td><%= url.redirectUrl %></td>
+                        <td><%= url.visitHistory.length %></td>
+                    </tr>
+                <% }) %>
+            </tbody>
+        </table>
+    <% } %>
+
+</div>
+
+<script>
+    function toggleDarkMode() {
+        document.body.classList.toggle("dark");
+    }
+
+    function copyToClipboard() {
+        const text = document.getElementById("shortUrl").innerText;
+        navigator.clipboard.writeText(text);
+        alert("Copied to clipboard!");
+    }
+</script>
+
+</body>
+</html>
